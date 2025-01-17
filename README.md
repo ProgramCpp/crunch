@@ -20,7 +20,7 @@ ex: given the current counter value is 10 and two concurrent requests update the
 - the api can return 12, 15, 17
 - at the end of the two api calls, the counter value will be 17
 
-The counter service is built on the HTTP protocol.
+The counter service is built on the HTTP protocol, with json data format.
 
 ## prerequisites
 - go 1.22+

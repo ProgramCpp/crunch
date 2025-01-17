@@ -16,7 +16,7 @@ func TestCounterHandler(t *testing.T) {
 	req, err := http.NewRequest(http.MethodGet, "/",
 		strings.NewReader(
 		`{
-			"count": 10; 
+			"count": 10 
 		}`),
 	)
 	assert.NoError(t, err)
@@ -31,7 +31,7 @@ func TestCounterHandler(t *testing.T) {
 
 	count, err :=jsonparser.GetInt(data, "count")
 	assert.NoError(t, err)
-	assert.Equal(t, 10, count);
+	assert.Equal(t, int64(10), count);
 }
 
 

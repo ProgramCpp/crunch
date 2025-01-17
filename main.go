@@ -6,6 +6,8 @@ import (
 )
 
 func main(){
-	http.HandleFunc("/", counterHandler)
+	var c counter
+
+	http.HandleFunc("/", NewCounterHandler(&c).Handle)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

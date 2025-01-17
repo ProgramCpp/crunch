@@ -10,11 +10,17 @@ import (
 	"github.com/buger/jsonparser"
 )
 
-// assuming the max counter value is in range.
-// todo: add wraparound for larger values
-var counter int64
+type counterHandler struct {
+	counter *counter
+}
 
-func counterHandler(w http.ResponseWriter, r *http.Request) {
+func NewCounterHandler(c *counter) counterHandler {
+	return counterHandler{
+		counter: c,
+	}
+}
+
+func (c counterHandler)Handle(w http.ResponseWriter, r *http.Request) {
 	data, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("error reading request: %s", err.Error())
@@ -29,7 +35,7 @@ func counterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	count = atomic.AddInt64(&counter, count)
+	count = atomic.AddInt64(&c.counter.value, count)
 
 	w.Write([]byte( fmt.Sprintf(
 	`

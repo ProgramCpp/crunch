@@ -8,24 +8,24 @@ type counter struct {
 	stream chan int64
 }
 
-func NewCounter()counter {
+func NewCounter() counter {
 	return counter{
 		stream: make(chan int64, 10000), // max delay in value updates.
 	}
 }
 
-func (c counter) Value() (int64) {
+func (c counter) Value() int64 {
 	return c.value
 }
 
-func (c counter) Add(x int64) {
+func (c *counter) Add(x int64) {
 	c.stream <- x
 }
 
 // todo: error handling
-func (c counter) Run() {
+func (c *counter) Run() {
 	go func() {
-		for v :=range <- c.stream{
+		for v := range c.stream {
 			c.value += v // value updated only by this routine
 		}
 	}()

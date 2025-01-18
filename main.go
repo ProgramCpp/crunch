@@ -9,6 +9,6 @@ func main(){
 	c := NewCounter()
 	c.Run()
 
-	http.HandleFunc("/", NewCounterHandler(&c).Handle)
+	http.HandleFunc("POST /counter", NewCounterHandler(&c).Handle)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

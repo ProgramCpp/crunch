@@ -30,6 +30,14 @@ The counter service is built on the HTTP protocol, with json data format.
 go build  -o ./build/
 ```
 
+## test
+```
+curl -H 'Content-Type: application/json' \
+      -d '{ "count":10}' \
+      -X POST \
+      http://localhost:8080/counter
+```
+
 ## run
 ```
 ./build/crunch

@@ -5,7 +5,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"sync/atomic"
 
 	"github.com/buger/jsonparser"
 )
@@ -35,12 +34,12 @@ func (c counterHandler)Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	count = atomic.AddInt64(&c.counter.value, count)
+	c.counter.Add(count)
 
 	w.Write([]byte( fmt.Sprintf(
 	`
 	{
 		"count": %d
 	}
-	`, count)))
+	`, c.counter.Value())))
 }

@@ -1,20 +1,19 @@
 package main
 
 import (
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"sync"
 	"testing"
-
-	"github.com/buger/jsonparser"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCounterHandler(t *testing.T) {
-	var c counter
+	c := NewCounter()
+	c.Run()
 	handler := NewCounterHandler(&c)
 
 	req, err := http.NewRequest(http.MethodGet, "/",
@@ -29,16 +28,13 @@ func TestCounterHandler(t *testing.T) {
 	handler.Handle(res, req)
 	assert.Equal(t, http.StatusOK, res.Code)
 
-	data, err := io.ReadAll(res.Result().Body)
-	assert.NoError(t, err)
-
-	count, err := jsonparser.GetInt(data, "count")
-	assert.NoError(t, err)
-	assert.Equal(t, int64(10), count)
+	time.Sleep(1000 * time.Millisecond)
+	assert.Equal(t, int64(10), c.Value())
 }
 
 func TestCounterHandlerMultipleRequests(t *testing.T) {
-	var c counter
+	c := NewCounter()
+	c.Run()
 	handler := NewCounterHandler(&c)
 
 	for i := 1; i <= 10; i++ {
@@ -53,20 +49,14 @@ func TestCounterHandlerMultipleRequests(t *testing.T) {
 
 		handler.Handle(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
-
-		data, err := io.ReadAll(res.Result().Body)
-		assert.NoError(t, err)
-
-		count, err := jsonparser.GetInt(data, "count")
-		assert.NoError(t, err)
-		assert.Equal(t, int64(i * 10), count) // counter updated after each api call
 	}
 
-	assert.Equal(t, int64(100), c.value) // counter updated after all the api calls
+	assert.Equal(t, int64(100), c.Value()) // counter updated after all the api calls
 }
 
 func TestCounterHandlerConcurrentRequests(t *testing.T) {
-	var c counter
+	c := NewCounter()
+	c.Run()
 	handler := NewCounterHandler(&c)
 
 	var wg sync.WaitGroup
@@ -90,5 +80,7 @@ func TestCounterHandlerConcurrentRequests(t *testing.T) {
 
 	wg.Wait()
 
-	assert.Equal(t, int64(10000), c.value)
+	time.Sleep(1 * time.Second)
+
+	assert.Equal(t, int64(10000), c.Value())
 }

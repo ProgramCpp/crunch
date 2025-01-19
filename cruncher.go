@@ -10,7 +10,7 @@ import (
 )
 
 type counterHandler struct {
-	counter *counter
+	counter *counter // todo: replace pointer by interface type for testable code
 }
 
 func NewCounterHandler(c *counter) counterHandler {
@@ -19,7 +19,7 @@ func NewCounterHandler(c *counter) counterHandler {
 	}
 }
 
-func (c counterHandler)Handle(w http.ResponseWriter, r *http.Request) {
+func (c counterHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	data, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Printf("error reading request: %s", err.Error())
@@ -36,8 +36,8 @@ func (c counterHandler)Handle(w http.ResponseWriter, r *http.Request) {
 
 	c.counter.Add(count)
 
-	w.Write([]byte( fmt.Sprintf(
-	`
+	w.Write([]byte(fmt.Sprintf(
+		`
 	{
 		"count": %d
 	}

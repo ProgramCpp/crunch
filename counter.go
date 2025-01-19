@@ -1,5 +1,7 @@
 package main
 
+import "sync/atomic"
+
 type counter struct {
 	// assuming the max counter value is in range.
 	// todo: add wraparound for larger values
@@ -15,7 +17,7 @@ func NewCounter() counter {
 }
 
 func (c counter) Value() int64 {
-	return c.value
+	return atomic.LoadInt64(&c.value)
 }
 
 func (c *counter) Add(x int64) {
@@ -26,7 +28,7 @@ func (c *counter) Add(x int64) {
 func (c *counter) Run() {
 	go func() {
 		for v := range c.stream {
-			c.value += v // value updated only by this routine
+			atomic.AddInt64(&c.value, v)
 		}
 	}()
 }

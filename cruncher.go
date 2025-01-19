@@ -34,12 +34,12 @@ func (c counterHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	currentValue := c.counter.Value()
 	c.counter.Add(count)
 
-	w.Write([]byte(fmt.Sprintf(
-		`
+	w.Write([]byte(fmt.Sprintf(`
 	{
 		"count": %d
 	}
-	`, c.counter.Value())))
+	`, currentValue+count)))
 }

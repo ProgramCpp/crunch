@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/buger/jsonparser"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -28,6 +29,13 @@ func TestCounterHandler(t *testing.T) {
 
 	handler.Handle(res, req)
 	assert.Equal(t, http.StatusOK, res.Code)
+
+	body, err := io.ReadAll(res.Body)
+	assert.NoError(t, err)
+
+	count, err := jsonparser.GetInt(body, "count")
+	assert.NoError(t, err)
+	assert.GreaterOrEqual(t, count, int64(10))
 
 	time.Sleep(100 * time.Millisecond)
 	assert.Equal(t, int64(10), c.Value())
@@ -51,10 +59,12 @@ func TestCounterHandlerMultipleRequests(t *testing.T) {
 		handler.Handle(res, req)
 		assert.Equal(t, http.StatusOK, res.Code)
 
-		d, _ := io.ReadAll(res.Body)
-		s := string(d)
+		body, err := io.ReadAll(res.Body)
+		assert.NoError(t, err)
 
-		_ = s
+		count, err := jsonparser.GetInt(body, "count")
+		assert.NoError(t, err)
+		assert.GreaterOrEqual(t, count, int64(10))
 	}
 
 	time.Sleep(100 * time.Millisecond)
@@ -82,6 +92,13 @@ func TestCounterHandlerConcurrentRequests(t *testing.T) {
 
 			handler.Handle(res, req)
 			assert.Equal(t, http.StatusOK, res.Code)
+
+			body, err := io.ReadAll(res.Body)
+			assert.NoError(t, err)
+
+			count, err := jsonparser.GetInt(body, "count")
+			assert.NoError(t, err)
+			assert.GreaterOrEqual(t, count, int64(10))
 		}()
 	}
 

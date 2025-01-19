@@ -15,8 +15,14 @@ latency is favored as per the requirements (2) above. The counter is updated asy
 i.e, the order of api's do not influence the counter value. For practical use cases, order of concurrent requests cannot be controlled. 
 
 ex: given the current counter value is 10 and two concurrent requests update the counter by 2 and 5 respectively,
-- the api can return 10, 12, 15, 17
+- the api's can return 10 or 12 and 15 or 17 respectively.
 - at the end of the two api calls, the counter value will be 17, after a delay.
+
+downside:
+the counter is not updated realtime. 
+maximum parallelism depend on the number of cores. Are concurrent atomic updates faster than pushing the updates to a channel at scale?
+todo: at scale, monitor contention to update the counter value concurrently. If atomic operations do not affect latency, perform synchronous updates.
+
 
 The counter service is built on the HTTP protocol, with json data format.
 
